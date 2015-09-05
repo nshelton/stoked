@@ -1,0 +1,102 @@
+<html>
+<head>
+
+<style>
+body {
+  margin: 0;
+}
+
+</style>
+<script src="lib/analytics.js" type="text/javascript" ></script>
+
+<script src="lib/GLOW.js" type="text/javascript" ></script>
+<script src="lib/jquery.min.js" type="text/javascript"> </script>
+<script src="lib/stats.min.js" type="text/javascript"> </script>
+<script src="lib/ThreeAudio.js" type="text/javascript"> </script>
+
+
+<script src="fluid.js" type="text/javascript"> </script>
+<script src="director.js" type="text/javascript"> </script>
+
+
+<script src="presets/default.js" type="text/javascript"> </script>
+<script src="presets/palettes.js" type="text/javascript"> </script>
+<script src="presets/presets.js" type="text/javascript"> </script>
+
+
+<script src="ui.js" type="text/javascript"> </script>
+
+<script>
+
+// globals
+running = true;
+  // ui 
+
+$(document).ready(function() {
+
+  new GLOW.Load({
+
+    vertex:         "./shaders/vertex.glsl",
+    advec:          "./shaders/advec.glsl",
+    apply_vort:     "./shaders/apply_vort.glsl",
+    vort:           "./shaders/vort.glsl",
+    clear:          "./shaders/clear.glsl",
+    diffuse:        "./shaders/diffuse.glsl",
+    divergence:     "./shaders/divergence.glsl",
+    force:          "./shaders/force.glsl",
+    render:         "./shaders/render.glsl",
+    solve_pressure: "./shaders/solve_pressure.glsl",
+    sub_grad:       "./shaders/sub_grad.glsl",
+    gray_scott:     "./shaders/gray_scott.glsl",
+    raytracer:     "./shaders/raytracer.glsl",
+
+    onLoadComplete: run
+
+  });
+});
+
+run = function(shaders) {
+
+  // STATS INIT
+  ritika = new Stats();
+  ritika.domElement.style.position = 'absolute';
+  ritika.domElement.style.bottom = '0px';
+  // container.appendChild( ritika.domElement );
+
+  // FLUID SIM
+  // PARAMS.audio = new ThreeAudio.Source().load("../mp3/In-Season.mp3.mp3",
+    // function() {PARAMS.audio.play()} );
+  PARAMS.audio = new ThreeAudio.Source().mic()
+  PARAMS.set(defaults)
+
+  sim = new FLUID();
+  sim.init(2, shaders, PARAMS);
+
+  function animate() {
+    ritika.update();
+    if (running) {
+      PARAMS.advance()
+
+      if (PARAMS.fluid)
+        sim.renderFluid();
+
+      if (PARAMS.raytrace)
+        sim.renderRaytrace();
+    }
+
+    requestAnimationFrame(animate);
+  }
+  
+  animate();
+
+}
+
+</script>
+
+
+
+
+</head>
+<body id="container"></body>
+</html>
+<!--  -->
